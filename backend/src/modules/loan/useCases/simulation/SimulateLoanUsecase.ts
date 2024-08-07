@@ -55,13 +55,14 @@ class SimulateLoanUseCase {
       throw new AppError("ERR_INSTALLMENTS_MIN_VALUE", 400);
     }
 
-    const installments_times = balance / installments_value;
+    const installments_times = Math.floor(balance / installments_value);
 
     const balance_with_interest = balance + (calcPercent(balance, state.interest) * installments_times);
 
     const moreSimulations = [];
 
-    for (let i = installments_times; i < 1; i--) {
+    for (let i = installments_times; i > 0; i--) {
+      console.log(i)
       moreSimulations.push({
         balance_with_interest: balance + (calcPercent(balance, state.interest) * i),
         interest: calcPercent(balance, state.interest) * i,
