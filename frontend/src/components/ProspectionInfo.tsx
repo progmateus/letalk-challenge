@@ -7,8 +7,8 @@ interface IProps {
 function ProspectionInfo({ info, title }: IProps) {
   return (
     <Box>
-      <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">{title}</Typography>
-      <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">{info}</Typography>
+      <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="12px">{title}</Typography>
+      <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="18px">{info}</Typography>
     </Box>
   )
 }

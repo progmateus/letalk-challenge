@@ -6,6 +6,8 @@ import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import customParseFormat from "dayjs/plugin/customParseFormat"
+import { ProspectionInfo } from "@/components/ProspectionInfo";
+import { convertMoney } from "@/utils/convertMoney";
 
 
 dayjs.extend(customParseFormat)
@@ -130,64 +132,19 @@ export default function Home() {
         <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Veja a simulação para seu emprestimo antes de efetivar </Typography>
         <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
 
-          <Box textAlign="left" display="flex" gap="8rem" flexWrap="wrap">
-            <Box>
-              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">VALOR REQUERIDO:</Typography>
-              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
-                {
-                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
-                    50000,
-                  )
-                }
-              </Typography>
-            </Box>
+          <Box textAlign="left" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="4rem">
 
-            <Box>
-              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TAXA DE JUROS:</Typography>
-              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
-                1% ao mês
-              </Typography>
-            </Box>
+            <ProspectionInfo title="VALOR REQUERIDO:" info={convertMoney(50000)} />
 
+            <ProspectionInfo title="TAXA DE JUROS:" info="1% ao mês" />
 
-            <Box>
-              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">VALOR QUE DESEJA PAGAR POD MÊS:</Typography>
-              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
-                {
-                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
-                    15000,
-                  )
-                }
-              </Typography>
-            </Box>
+            <ProspectionInfo title="VALOR QUE DESEJA PAGAR POD MÊS:" info={convertMoney(15000)} />
 
+            <ProspectionInfo title="TOTAL DE MESES PARA QUITAR:" info="5 MESES" />
 
-            <Box>
-              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TOTAL DE MESES PARA QUITAR</Typography>
-              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px"> 5 MESES</Typography>
-            </Box>
+            <ProspectionInfo title="TOTAL DE JUROS:" info={convertMoney(1545.53)} />
 
-            <Box>
-              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TOTAL DE JUROS:</Typography>
-              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
-                {
-                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
-                    1545.53,
-                  )
-                }
-              </Typography>
-            </Box>
-
-            <Box>
-              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TOTAL A PAGAR:</Typography>
-              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
-                {
-                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
-                    61545.53,
-                  )
-                }
-              </Typography>
-            </Box>
+            <ProspectionInfo title="TOTAL A PAGAR:" info={convertMoney(1545.53)} />
           </Box>
           <Button variant="contained" type="submit" className="bg-amber-700">SIMULAR</Button>
         </Stack>
