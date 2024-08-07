@@ -8,6 +8,9 @@ import { z } from "zod";
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { ProspectionInfo } from "@/components/ProspectionInfo";
 import { convertMoney } from "@/utils/convertMoney";
+import { useState } from "react";
+import { IProspectionDTO } from "@/dtos/IProspectionDTO";
+import { LoadingButton } from '@mui/lab';
 
 
 dayjs.extend(customParseFormat)
@@ -34,8 +37,13 @@ export default function Home() {
     resolver: zodResolver(loanSchema)
   });
 
+  const [currentProspection, setCurrentProspection] = useState<IProspectionDTO | null>(null)
+  const [moreProspections, setMoreProspections] = useState<IProspectionDTO[] | []>([])
+  const [isLoading, setIsLoading] = useState(false)
+
 
   const handleSimulate = async ({ balance, birth_date, cpf, installments_value, state_id }: LoanProps) => {
+    if (isLoading) return
     if (balance < 50000) {
       setError("balance", {
         message: "O valor mínimo é R$50.000"
@@ -49,10 +57,11 @@ export default function Home() {
       })
       return
     }
-
+    setIsLoading(true)
     await SimulateLoanService({ balance, birth_date, cpf, installments_value, state_id }).then((res) => {
       const { data } = res
-      console.log(data)
+      setCurrentProspection(data.data.currentSimulation)
+      setMoreProspections(data.data.moreSimulations)
     }).catch((err) => {
       console.log(err)
       console.log(err.response.data.message)
@@ -63,6 +72,8 @@ export default function Home() {
         })
         return
       }
+    }).finally(() => {
+      setIsLoading(false)
     })
   }
   return (
@@ -124,31 +135,35 @@ export default function Home() {
               <TextField label="QUAL VALOR DESEJA PAGAR POR MÊS?" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.installments_value?.message !== undefined} helperText={errors.installments_value?.message} />
             )}
           />
-          <Button variant="contained" type="submit" className="bg-amber-700">SIMULAR</Button>
+          <LoadingButton variant="contained" type="submit" className="bg-amber-700" loading={isLoading}>SIMULAR</LoadingButton>
         </Stack>
       </Stack>
 
-      <Stack spacing={2} direction="column" justifyContent="center" textAlign="center" mt={12}>
-        <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Veja a simulação para seu emprestimo antes de efetivar </Typography>
-        <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
+      {
+        currentProspection && (
+          <Stack spacing={2} direction="column" justifyContent="center" textAlign="center" mt={12}>
+            <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Veja a simulação para seu emprestimo antes de efetivar </Typography>
+            <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
 
-          <Box textAlign="left" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="4rem">
+              <Box textAlign="left" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="4rem">
 
-            <ProspectionInfo title="VALOR REQUERIDO:" info={convertMoney(50000)} />
+                <ProspectionInfo title="VALOR REQUERIDO:" info={convertMoney(currentProspection.balance)} />
 
-            <ProspectionInfo title="TAXA DE JUROS:" info="1% ao mês" />
+                <ProspectionInfo title="TAXA DE JUROS:" info="1% ao mês" />
 
-            <ProspectionInfo title="VALOR QUE DESEJA PAGAR POD MÊS:" info={convertMoney(15000)} />
+                <ProspectionInfo title="VALOR QUE DESEJA PAGAR POR MÊS:" info={convertMoney(currentProspection.installments_value)} />
 
-            <ProspectionInfo title="TOTAL DE MESES PARA QUITAR:" info="5 MESES" />
+                <ProspectionInfo title="TOTAL DE MESES PARA QUITAR:" info={`${currentProspection.installments_times} MESES`} />
 
-            <ProspectionInfo title="TOTAL DE JUROS:" info={convertMoney(1545.53)} />
+                <ProspectionInfo title="TOTAL DE JUROS:" info={convertMoney(currentProspection.interest)} />
 
-            <ProspectionInfo title="TOTAL A PAGAR:" info={convertMoney(1545.53)} />
-          </Box>
-          <Button variant="contained" type="submit" className="bg-amber-700">SIMULAR</Button>
-        </Stack>
-      </Stack>
+                <ProspectionInfo title="TOTAL A PAGAR:" info={convertMoney(currentProspection.balance_with_interest)} />
+              </Box>
+              <Button variant="contained" type="submit" className="bg-amber-700">SIMULAR</Button>
+            </Stack>
+          </Stack>
+        )
+      }
     </Box>
   );
 }

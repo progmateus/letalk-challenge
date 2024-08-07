@@ -22,9 +22,11 @@ interface IResponse {
 }
 
 interface ISimulation {
+  balance: number;
   balance_with_interest: number,
   interest: number,
   installments_value: number,
+  installments_times: number;
   maturity_date: Date,
 }
 
@@ -67,15 +69,18 @@ class SimulateLoanUseCase {
         balance_with_interest: balance + (calcPercent(balance, state.interest) * i),
         interest: calcPercent(balance, state.interest) * i,
         installments_value: installments_value,
+        installments_times: i,
         maturity_date: dayjs().add(i, "month")
       })
     }
 
     return {
       currentSimulation: {
+        balance,
         balance_with_interest,
         interest: calcPercent(balance, state.interest) * installments_times,
         installments_value: installments_value,
+        installments_times: installments_times,
         maturity_date: dayjs().add(installments_times, "month").toDate()
       },
       moreSimulations,
