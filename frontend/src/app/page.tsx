@@ -1,5 +1,5 @@
 'use client'
-import { SimulateLoanService } from "@/services/LoansService";
+import { CreateLoansService, SimulateLoanService } from "@/services/LoansService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
 import dayjs from "dayjs";
@@ -123,18 +123,11 @@ export default function Home() {
     if (!currentParams) {
       return
     }
-    await SimulateLoanService(currentParams).then((res) => {
+    await CreateLoansService(currentParams).then((res) => {
       fireSuccessNotification('Empréstimo efetivado com sucesso')
       setCurrentProspection(null)
       setMoreProspections([])
       setCurrentParams(null)
-      reset({
-        balance: undefined,
-        birth_date: undefined,
-        cpf: undefined,
-        installments_value: undefined,
-        state_id: undefined
-      })
     }).catch((err) => {
       console.log(err)
     }).finally(() => {

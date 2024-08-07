@@ -8,3 +8,11 @@ export function SimulateLoanService(data: ISimulateLoanDTO) {
     data
   })
 }
+
+export function CreateLoansService(data: ISimulateLoanDTO) {
+  return api({
+    url: '/loans',
+    method: 'post',
+    data
+  })
+}
