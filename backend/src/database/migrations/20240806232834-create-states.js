@@ -17,7 +17,7 @@ module.exports = {
         allowNull: false
       },
       interest: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL,
         allowNull: false
       },
       created_at: {
