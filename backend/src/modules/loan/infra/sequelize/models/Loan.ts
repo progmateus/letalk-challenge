@@ -22,13 +22,13 @@ class Loan extends Model {
   birth_date: string;
 
   @Column
-  balance: string;
+  balance: number;
+
+  @Column
+  balance_with_interest: number;
 
   @Column
   current_interest: string;
-
-  @Column
-  balance_with_interest: string;
 
   @Column
   installments_value: number;

@@ -30,6 +30,10 @@ module.exports = {
         type: DataTypes.DECIMAL,
         allowNull: false
       },
+      balance_with_interest: {
+        type: DataTypes.DECIMAL,
+        allowNull: false
+      },
       current_interest: {
         type: DataTypes.DECIMAL,
         allowNull: false
