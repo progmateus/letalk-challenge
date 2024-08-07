@@ -24,12 +24,17 @@ type LoanProps = z.infer<typeof loanSchema>
 
 export default function Home() {
 
-  const { control, register, formState: { errors, isValid }, getValues, handleSubmit } = useForm<LoanProps>({
+  const { control, register, formState: { errors, isValid }, getValues, setError, handleSubmit } = useForm<LoanProps>({
     resolver: zodResolver(loanSchema)
   });
 
 
   const handleSimulate = (data: LoanProps) => {
+    if (Number(String(getValues("balance")).replaceAll('.', '').replace(',', '.')) < 50000) {
+      setError("balance", {
+        message: "O valor mínimo é 50.000"
+      })
+    }
     console.log(data)
   }
   return (
