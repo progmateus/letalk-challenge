@@ -1,7 +1,7 @@
 'use client'
 import { CreateLoansService, SimulateLoanService } from "@/services/LoansService";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
+import { Box, Button, MenuItem, Select, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -17,6 +17,7 @@ import EastIcon from '@mui/icons-material/East';
 import { ISimulateLoanDTO } from "@/dtos/ILoanDTO";
 import { fireSuccessNotification } from "@/utils/helperNotifications";
 import { ListStatesService } from "@/services/StatesService";
+import { IStateDTO } from "@/dtos/IStateDTO";
 
 
 dayjs.extend(customParseFormat)
@@ -29,7 +30,7 @@ const loanSchema = z.object({
     (a) => parseInt(z.string().transform((val) => val.replaceAll('.', '').replace(',', '.')).parse(a), 10),
     z.number().positive()
   ),
-  state_id: z.string().transform((val) => parseInt(val)),
+  state_id: z.number(),
   birth_date: z.string().transform((val) => dayjs(val, "DD/MM/YYYY").toDate()),
   cpf: z.string().transform((val) => val.replaceAll('.', '').replaceAll('-', '')),
 });
@@ -45,7 +46,7 @@ export default function Home() {
 
   const [currentProspection, setCurrentProspection] = useState<IProspectionDTO | null>(null)
   const [moreProspections, setMoreProspections] = useState<IProspectionDTO[] | []>([])
-  const [states, setStates] = useState([])
+  const [states, setStates] = useState<IStateDTO[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentParams, setCurrentParams] = useState<ISimulateLoanDTO | null>(null)
 
@@ -53,7 +54,7 @@ export default function Home() {
     ListStatesService().then((res) => {
       const { data } = res
       console.log(res)
-      setStates(data.data.states)
+      setStates(data.data)
     })
   }, [])
 
@@ -174,9 +175,21 @@ export default function Home() {
               name="state_id"
               control={control}
               render={({ field: { onChange, value } }) => (
-                <TextField label="UF" variant="outlined" type="number" fullWidth onChange={onChange} value={value} error={errors.state_id?.message !== undefined} helperText={errors.state_id?.message} />
+                <TextField select label="UF" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.state_id?.message !== undefined} helperText={errors.state_id?.message} style={{ textAlign: 'left' }}>
+                  {
+                    states && states.length > 0 &&
+                    (
+                      states.map((s) => {
+                        return (
+                          <MenuItem key={s.id} value={s.id}>{s.uf}</MenuItem>
+                        )
+                      })
+                    )
+                  }
+                </TextField>
               )}
             />
+
 
 
             <Controller
