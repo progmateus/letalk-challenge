@@ -9,6 +9,9 @@ class Statesrepository implements IStatesRepository {
   constructor() {
     this.repository = sequelize.getRepository(State)
   }
+  list(): Promise<State[]> {
+    return this.repository.findAll();
+  }
   async findById(id: number): Promise<State> {
     return this.repository.findByPk(id);
   }

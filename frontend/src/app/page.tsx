@@ -14,6 +14,8 @@ import { LoadingButton } from '@mui/lab';
 import { DataGrid } from "@mui/x-data-grid";
 import { theme } from "@/theme";
 import EastIcon from '@mui/icons-material/East';
+import { ISimulateLoanDTO } from "@/dtos/ILoanDTO";
+import { fireSuccessNotification } from "@/utils/helperNotifications";
 
 
 dayjs.extend(customParseFormat)
@@ -36,13 +38,14 @@ type LoanProps = z.infer<typeof loanSchema>
 
 export default function Home() {
 
-  const { control, register, formState: { errors, isValid }, getValues, setError, handleSubmit } = useForm<LoanProps>({
+  const { control, register, formState: { errors, isValid }, getValues, setError, handleSubmit, reset } = useForm<LoanProps>({
     resolver: zodResolver(loanSchema)
   });
 
   const [currentProspection, setCurrentProspection] = useState<IProspectionDTO | null>(null)
   const [moreProspections, setMoreProspections] = useState<IProspectionDTO[] | []>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [currentParams, setCurrentParams] = useState<ISimulateLoanDTO | null>(null)
 
   const columns: any[] = [
     { field: 'balance', headerName: 'SALDO DEVEDOR', valueGetter: (value: number) => convertMoney(value), width: 150 },
@@ -86,6 +89,13 @@ export default function Home() {
       const { data } = res
       setCurrentProspection(data.data.currentSimulation)
       setMoreProspections(data.data.moreSimulations)
+      setCurrentParams({
+        balance,
+        birth_date,
+        cpf,
+        installments_value,
+        state_id
+      })
 
       const table = document.getElementById("more-simulations-table")
       if (table) {
@@ -104,6 +114,29 @@ export default function Home() {
         })
         return
       }
+    }).finally(() => {
+      setIsLoading(false)
+    })
+  }
+
+  const handleCreateLoan = async () => {
+    if (!currentParams) {
+      return
+    }
+    await SimulateLoanService(currentParams).then((res) => {
+      fireSuccessNotification('Empréstimo efetivado com sucesso')
+      setCurrentProspection(null)
+      setMoreProspections([])
+      setCurrentParams(null)
+      reset({
+        balance: undefined,
+        birth_date: undefined,
+        cpf: undefined,
+        installments_value: undefined,
+        state_id: undefined
+      })
+    }).catch((err) => {
+      console.log(err)
     }).finally(() => {
       setIsLoading(false)
     })
@@ -213,7 +246,7 @@ export default function Home() {
                     }}
                   />
                 </Box>
-                <LoadingButton variant="contained" type="submit" color="success" loading={isLoading} endIcon={<EastIcon />}>EFETIVAR O EMPRÉSTIMO</LoadingButton>
+                <LoadingButton variant="contained" onClick={handleCreateLoan} color="success" loading={isLoading} endIcon={<EastIcon />}>EFETIVAR O EMPRÉSTIMO</LoadingButton>
               </Stack>
             </Stack>
           )
