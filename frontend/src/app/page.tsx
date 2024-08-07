@@ -20,7 +20,7 @@ const loanSchema = z.object({
   ),
   state_id: z.string().transform((val) => parseInt(val)),
   birth_date: z.string().transform((val) => dayjs(val, "DD/MM/YYYY").toDate()),
-  cpf: z.string(),
+  cpf: z.string().transform((val) => val.replaceAll('.', '').replaceAll('-', '')),
 });
 
 type LoanProps = z.infer<typeof loanSchema>
@@ -53,6 +53,14 @@ export default function Home() {
       console.log(data)
     }).catch((err) => {
       console.log(err)
+      console.log(err.response.data.message)
+
+      if (err.response.data.message === "ERR_INVALID_CPF") {
+        setError("cpf", {
+          message: "CPF invialido"
+        })
+        return
+      }
     })
   }
   return (
@@ -118,9 +126,72 @@ export default function Home() {
         </Stack>
       </Stack>
 
-      <Box width="60rem" height="20rem" bgcolor="blue">
-        eai
-      </Box>
+      <Stack spacing={2} direction="column" justifyContent="center" textAlign="center" mt={12}>
+        <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Veja a simulação para seu emprestimo antes de efetivar </Typography>
+        <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
+
+          <Box textAlign="left" display="flex" gap="8rem" flexWrap="wrap">
+            <Box>
+              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">VALOR REQUERIDO:</Typography>
+              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
+                {
+                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
+                    50000,
+                  )
+                }
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TAXA DE JUROS:</Typography>
+              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
+                1% ao mês
+              </Typography>
+            </Box>
+
+
+            <Box>
+              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">VALOR QUE DESEJA PAGAR POD MÊS:</Typography>
+              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
+                {
+                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
+                    15000,
+                  )
+                }
+              </Typography>
+            </Box>
+
+
+            <Box>
+              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TOTAL DE MESES PARA QUITAR</Typography>
+              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px"> 5 MESES</Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TOTAL DE JUROS:</Typography>
+              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
+                {
+                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
+                    1545.53,
+                  )
+                }
+              </Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="14px">TOTAL A PAGAR:</Typography>
+              <Typography variant="subtitle1" component="p" fontWeight="700" fontSize="20px">
+                {
+                  new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'BRL' }).format(
+                    61545.53,
+                  )
+                }
+              </Typography>
+            </Box>
+          </Box>
+          <Button variant="contained" type="submit" className="bg-amber-700">SIMULAR</Button>
+        </Stack>
+      </Stack>
     </Box>
   );
 }
