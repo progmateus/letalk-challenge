@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { z } from "zod";
 import { isValidCPF } from "../../../../utils/isValidCpf";
 import { calcPercent } from "../../../../utils/calcPercent";
+import { Loan } from "../../infra/sequelize/models/Loan";
 
 
 const loanSchema = z.object({
@@ -25,7 +26,7 @@ class CreateLoanUseCase {
     private statesRepository: IStatesRepository,
   ) { }
 
-  async execute({ balance, birth_date, cpf, state_id, installments_value }: Omit<ICreateLoanDTO, "installments_times" | "maturity_date" | "interest">) {
+  async execute({ balance, birth_date, cpf, state_id, installments_value }: Omit<ICreateLoanDTO, "installments_times" | "maturity_date" | "interest">): Promise<Loan> {
     const uf = await this.statesRepository.findById(state_id);
 
     if (!uf) {
@@ -54,11 +55,10 @@ class CreateLoanUseCase {
     const installments_times = Math.floor(balance / installments_value);
 
     const balance_with_interest = balance + (calcPercent(balance, state.interest) * installments_times);
-    console.log("CARALHO: ==============", Number(balance_with_interest.toFixed(2)))
 
     /* armazenar a taxa de juros atual pois ela pode ser alterada conforme o tempo */
 
-    await this.loansRepository.create({
+    const loan = await this.loansRepository.create({
       balance: Number(balance.toFixed(2)),
       balance_with_interest: Number(balance_with_interest.toFixed(2)),
       birth_date,
@@ -69,6 +69,8 @@ class CreateLoanUseCase {
       maturity_date: dayjs().add(installments_times, "month").toDate(),
       state_id,
     })
+
+    return this.loansRepository.findById(loan.id);
   }
 }
 export { CreateLoanUseCase }
