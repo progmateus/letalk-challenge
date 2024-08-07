@@ -1,10 +1,9 @@
 import { ISimulateLoanDTO } from "@/dtos/ILoanDTO"
 import { api } from "./api"
 
-export function ListStatesService(data: ISimulateLoanDTO) {
+export function ListStatesService() {
   return api({
     url: '/states',
-    method: 'get',
-    data
+    method: 'get'
   })
 }

@@ -8,7 +8,7 @@ import { z } from "zod";
 import customParseFormat from "dayjs/plugin/customParseFormat"
 import { ProspectionInfo } from "@/components/ProspectionInfo";
 import { convertMoney } from "@/utils/convertMoney";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IProspectionDTO } from "@/dtos/IProspectionDTO";
 import { LoadingButton } from '@mui/lab';
 import { DataGrid } from "@mui/x-data-grid";
@@ -16,6 +16,7 @@ import { theme } from "@/theme";
 import EastIcon from '@mui/icons-material/East';
 import { ISimulateLoanDTO } from "@/dtos/ILoanDTO";
 import { fireSuccessNotification } from "@/utils/helperNotifications";
+import { ListStatesService } from "@/services/StatesService";
 
 
 dayjs.extend(customParseFormat)
@@ -44,8 +45,17 @@ export default function Home() {
 
   const [currentProspection, setCurrentProspection] = useState<IProspectionDTO | null>(null)
   const [moreProspections, setMoreProspections] = useState<IProspectionDTO[] | []>([])
+  const [states, setStates] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentParams, setCurrentParams] = useState<ISimulateLoanDTO | null>(null)
+
+  useEffect(() => {
+    ListStatesService().then((res) => {
+      const { data } = res
+      console.log(res)
+      setStates(data.data.states)
+    })
+  }, [])
 
   const columns: any[] = [
     { field: 'balance', headerName: 'SALDO DEVEDOR', valueGetter: (value: number) => convertMoney(value), width: 150 },
