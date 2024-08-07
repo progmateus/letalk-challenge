@@ -4,6 +4,6 @@ import { ListStatesController } from "../../../../modules/loan/useCases/listStat
 const statesRoutes = Router();
 const listStatesController = new ListStatesController()
 
-statesRoutes.post("/", listStatesController.handle);
+statesRoutes.get("/", listStatesController.handle);
 
 export { statesRoutes };
