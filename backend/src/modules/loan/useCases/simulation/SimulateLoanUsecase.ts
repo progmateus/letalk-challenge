@@ -22,6 +22,7 @@ interface IResponse {
 }
 
 interface ISimulation {
+  id?: number;
   balance: number;
   balance_with_interest: number,
   interest: number,
@@ -66,6 +67,8 @@ class SimulateLoanUseCase {
     for (let i = installments_times; i > 0; i--) {
       console.log(i)
       moreSimulations.push({
+        id: i,
+        balance: balance,
         balance_with_interest: balance + (calcPercent(balance, state.interest) * i),
         interest: calcPercent(balance, state.interest) * i,
         installments_value: installments_value,

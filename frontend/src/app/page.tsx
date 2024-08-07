@@ -1,7 +1,7 @@
 'use client'
 import { SimulateLoanService } from "@/services/LoansService";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -11,6 +11,9 @@ import { convertMoney } from "@/utils/convertMoney";
 import { useState } from "react";
 import { IProspectionDTO } from "@/dtos/IProspectionDTO";
 import { LoadingButton } from '@mui/lab';
+import { DataGrid } from "@mui/x-data-grid";
+import { theme } from "@/theme";
+import EastIcon from '@mui/icons-material/East';
 
 
 dayjs.extend(customParseFormat)
@@ -41,6 +44,27 @@ export default function Home() {
   const [moreProspections, setMoreProspections] = useState<IProspectionDTO[] | []>([])
   const [isLoading, setIsLoading] = useState(false)
 
+  const columns: any[] = [
+    { field: 'balance', headerName: 'SALDO DEVEDOR', valueGetter: (value: number) => convertMoney(value), width: 150 },
+    { field: 'interest', headerName: 'JUROS', valueGetter: (value: number) => convertMoney(value), width: 120 },
+    { field: 'balance_with_interest', headerName: 'SALDO DEVEDOR AJUSTADO', valueGetter: (value: number) => convertMoney(value), width: 220 },
+    {
+      field: 'installments_value',
+      headerName: 'VALOR DA PARCELA',
+      type: 'string',
+      valueGetter: (value: number) => convertMoney(value),
+      width: 200
+    },
+    {
+      field: 'maturity_date',
+      headerName: 'VENCIMENTO',
+      description: 'This column has a value getter and is not sortable.',
+      sortable: false,
+      valueGetter: (value: Date) => dayjs(value).format("MM/YYYY"),
+      width: 100
+    },
+  ];
+
 
   const handleSimulate = async ({ balance, birth_date, cpf, installments_value, state_id }: LoanProps) => {
     if (isLoading) return
@@ -62,6 +86,14 @@ export default function Home() {
       const { data } = res
       setCurrentProspection(data.data.currentSimulation)
       setMoreProspections(data.data.moreSimulations)
+
+      const table = document.getElementById("more-simulations-table")
+      if (table) {
+        table.scrollIntoView({
+          block: 'start',
+          behavior: 'smooth'
+        })
+      }
     }).catch((err) => {
       console.log(err)
       console.log(err.response.data.message)
@@ -77,93 +109,117 @@ export default function Home() {
     })
   }
   return (
-    <Box
-      display="flex"
-      minHeight="100vh"
-      flexDirection="column"
-      justifyContent="space-around"
-      alignItems="center"
-      bgcolor="grey.100"
-      px={2}
-      py={8}
-    >
-      <Typography variant="h3" component="h3" color="grey.500" fontWeight="100" mb={8}>Simule e solicite o seu orçamento.</Typography>
+    <ThemeProvider theme={theme}>
+      <Box
+        display="flex"
+        minHeight="100vh"
+        flexDirection="column"
+        justifyContent="space-around"
+        alignItems="center"
+        bgcolor="grey.100"
+        px={2}
+        py={8}
+      >
+        <Typography variant="h3" component="h3" color="grey.500" fontWeight="100" mb={8}>Simule e solicite o seu orçamento.</Typography>
 
-      <Stack component="form" onSubmit={handleSubmit(handleSimulate)} spacing={2} direction="column" justifyContent="center" textAlign="center">
-        <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Preencha o formulário abaixo para simular </Typography>
-        <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
+        <Stack component="form" onSubmit={handleSubmit(handleSimulate)} spacing={2} direction="column" justifyContent="center" textAlign="center">
+          <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Preencha o formulário abaixo para simular </Typography>
+          <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
 
-          <Controller
-            name="cpf"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField label="CPF" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.cpf?.message !== undefined} helperText={errors.cpf?.message} />
-            )}
-          />
+            <Controller
+              name="cpf"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField label="CPF" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.cpf?.message !== undefined} helperText={errors.cpf?.message} />
+              )}
+            />
 
-          <Controller
-            name="state_id"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField label="UF" variant="outlined" type="number" fullWidth onChange={onChange} value={value} error={errors.state_id?.message !== undefined} helperText={errors.state_id?.message} />
-            )}
-          />
-
-
-          <Controller
-            name="birth_date"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField label="DATA DE NASCIMENTO" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.birth_date?.message !== undefined} helperText={errors.birth_date?.message} />
-            )}
-          />
+            <Controller
+              name="state_id"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField label="UF" variant="outlined" type="number" fullWidth onChange={onChange} value={value} error={errors.state_id?.message !== undefined} helperText={errors.state_id?.message} />
+              )}
+            />
 
 
-          <Controller
-            name="balance"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField label="QUAL O VALOR DO EMPRESTIMO" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.balance?.message !== undefined} helperText={errors.balance?.message} />
-            )}
-          />
+            <Controller
+              name="birth_date"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField label="DATA DE NASCIMENTO" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.birth_date?.message !== undefined} helperText={errors.birth_date?.message} />
+              )}
+            />
 
 
-          <Controller
-            name="installments_value"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField label="QUAL VALOR DESEJA PAGAR POR MÊS?" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.installments_value?.message !== undefined} helperText={errors.installments_value?.message} />
-            )}
-          />
-          <LoadingButton variant="contained" type="submit" className="bg-amber-700" loading={isLoading}>SIMULAR</LoadingButton>
-        </Stack>
-      </Stack>
+            <Controller
+              name="balance"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField label="QUAL O VALOR DO EMPRÉSTIMO" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.balance?.message !== undefined} helperText={errors.balance?.message} />
+              )}
+            />
 
-      {
-        currentProspection && (
-          <Stack spacing={2} direction="column" justifyContent="center" textAlign="center" mt={12}>
-            <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Veja a simulação para seu emprestimo antes de efetivar </Typography>
-            <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
 
-              <Box textAlign="left" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="4rem">
-
-                <ProspectionInfo title="VALOR REQUERIDO:" info={convertMoney(currentProspection.balance)} />
-
-                <ProspectionInfo title="TAXA DE JUROS:" info="1% ao mês" />
-
-                <ProspectionInfo title="VALOR QUE DESEJA PAGAR POR MÊS:" info={convertMoney(currentProspection.installments_value)} />
-
-                <ProspectionInfo title="TOTAL DE MESES PARA QUITAR:" info={`${currentProspection.installments_times} MESES`} />
-
-                <ProspectionInfo title="TOTAL DE JUROS:" info={convertMoney(currentProspection.interest)} />
-
-                <ProspectionInfo title="TOTAL A PAGAR:" info={convertMoney(currentProspection.balance_with_interest)} />
-              </Box>
-              <Button variant="contained" type="submit" className="bg-amber-700">SIMULAR</Button>
-            </Stack>
+            <Controller
+              name="installments_value"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <TextField label="QUAL VALOR DESEJA PAGAR POR MÊS?" variant="outlined" fullWidth onChange={onChange} value={value} error={errors.installments_value?.message !== undefined} helperText={errors.installments_value?.message} />
+              )}
+            />
+            <LoadingButton variant="contained" type="submit" color="warning" loading={isLoading}>SIMULAR</LoadingButton>
           </Stack>
-        )
-      }
-    </Box>
+        </Stack>
+
+        {
+          currentProspection && (
+            <Stack spacing={2} direction="column" justifyContent="center" textAlign="center" mt={12}>
+              <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Veja a simulação para seu empréstimo antes de efetivar </Typography>
+              <Stack id="more-simulations-table" spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
+
+                <Box textAlign="left" display="grid" gridTemplateColumns="repeat(3, 1fr)" gap="4rem">
+
+                  <ProspectionInfo title="VALOR REQUERIDO:" info={convertMoney(currentProspection.balance)} />
+
+                  <ProspectionInfo title="TAXA DE JUROS:" info="1% ao mês" />
+
+                  <ProspectionInfo title="VALOR QUE DESEJA PAGAR POR MÊS:" info={convertMoney(currentProspection.installments_value)} />
+
+                  <ProspectionInfo title="TOTAL DE MESES PARA QUITAR:" info={`${currentProspection.installments_times} MESES`} />
+
+                  <ProspectionInfo title="TOTAL DE JUROS:" info={convertMoney(currentProspection.interest)} />
+
+                  <ProspectionInfo title="TOTAL A PAGAR:" info={convertMoney(currentProspection.balance_with_interest)} />
+                </Box>
+
+
+                <Box>
+                  <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="12px" textAlign="left" mt={8} mb={2}>PROJEÇÃO DAS PARCELAS:</Typography>
+
+                  <DataGrid
+                    rows={moreProspections}
+                    columns={columns}
+                    disableRowSelectionOnClick
+                    disableColumnFilter
+                    disableColumnSorting
+                    disableColumnResize
+                    hideFooterPagination={true}
+                    sx={{ border: 'none' }}
+                    initialState={{
+                      pagination: {
+                        paginationModel: { page: 0, pageSize: 5, },
+                      }
+                    }}
+                  />
+                </Box>
+                <LoadingButton variant="contained" type="submit" color="success" loading={isLoading} endIcon={<EastIcon />}>EFETIVAR O EMPRÉSTIMO</LoadingButton>
+              </Stack>
+            </Stack>
+          )
+        }
+      </Box>
+    </ThemeProvider>
+
   );
 }

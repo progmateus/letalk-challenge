@@ -1,4 +1,5 @@
 export interface IProspectionDTO {
+  id?: number;
   balance: number,
   balance_with_interest: number,
   interest: number,
