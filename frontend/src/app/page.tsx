@@ -1,21 +1,25 @@
 'use client'
+import { SimulateLoanService } from "@/services/LoansService";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import customParseFormat from "dayjs/plugin/customParseFormat"
 
 
+dayjs.extend(customParseFormat)
 const loanSchema = z.object({
   balance: z.preprocess(
-    (a) => parseInt(z.string().parse(a), 10),
+    (a) => parseInt(z.string().transform((val) => val.replaceAll('.', '').replace(',', '.')).parse(a), 10),
     z.number().positive()
   ),
   installments_value: z.preprocess(
-    (a) => parseInt(z.string().parse(a), 10),
+    (a) => parseInt(z.string().transform((val) => val.replaceAll('.', '').replace(',', '.')).parse(a), 10),
     z.number().positive()
   ),
-  state_id: z.string(),
-  birth_date: z.string(),
+  state_id: z.string().transform((val) => parseInt(val)),
+  birth_date: z.string().transform((val) => dayjs(val, "DD/MM/YYYY").toDate()),
   cpf: z.string(),
 });
 
@@ -29,13 +33,27 @@ export default function Home() {
   });
 
 
-  const handleSimulate = (data: LoanProps) => {
-    if (Number(String(getValues("balance")).replaceAll('.', '').replace(',', '.')) < 50000) {
+  const handleSimulate = async ({ balance, birth_date, cpf, installments_value, state_id }: LoanProps) => {
+    if (balance < 50000) {
       setError("balance", {
-        message: "O valor mínimo é 50.000"
+        message: "O valor mínimo é R$50.000"
       })
+      return
     }
-    console.log(data)
+
+    if (installments_value > balance) {
+      setError("installments_value", {
+        message: "O valor da parcela não pode ser maior que o valor do empréstimo"
+      })
+      return
+    }
+
+    await SimulateLoanService({ balance, birth_date, cpf, installments_value, state_id }).then((res) => {
+      const { data } = res
+      console.log(data)
+    }).catch((err) => {
+      console.log(err)
+    })
   }
   return (
     <Box
