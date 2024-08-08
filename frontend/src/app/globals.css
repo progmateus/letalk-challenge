@@ -4,6 +4,12 @@
   box-sizing: border-box;
 }
 
-.bg-amber-700 {
-  background-color: #ffa000;
+.table-container {
+  width: 35vw;
+}
+
+@media (max-width: 975px) {
+  .table-container {
+    width: 80vw;
+  }
 }

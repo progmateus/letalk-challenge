@@ -169,7 +169,7 @@ export default function Home() {
 
           <Button variant="contained" onClick={() => router.push('/loans')} style={{ margin: '1rem 0', width: '18rem', marginBottom: '-0.2rem', alignSelf: 'end' }} endIcon={<Visibility />}>VISUALIZAR EMPRÉSTIMOS</Button>
 
-          <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
+          <Stack spacing={2} direction="column" className="table-container" bgcolor="white" px={4} py={8} borderRadius={2}>
             <Controller
               name="cpf"
               control={control}
