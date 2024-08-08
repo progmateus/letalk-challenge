@@ -16,3 +16,10 @@ export function CreateLoansService(data: ISimulateLoanDTO) {
     data
   })
 }
+
+export function ListLoansService() {
+  return api({
+    url: '/loans',
+    method: 'get'
+  })
+}

@@ -1,15 +1,25 @@
-import { Box, Button, MenuItem, Select, Stack, TextField, ThemeProvider, Typography } from "@mui/material";
+'use client'
+import { Box, Button, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { convertMoney } from "@/utils/convertMoney";
 import dayjs from "dayjs";
+import { ListLoansService } from "@/services/LoansService";
+import { useEffect, useState } from "react";
+import { CPFFormat } from "@/formatCPF";
+import CircularProgress from '@mui/material/CircularProgress';
+import { Add } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 
-export default async function Loans() {
+export default function Loans() {
+  const [loans, setLoans] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
 
   const columns: any[] = [
-    { field: 'cpf', headerName: 'CPF' },
-    { field: 'id', headerName: 'SALDO DEVEDOR', valueGetter: (value: number) => convertMoney(value), width: 150 },
-    { field: 'interest', headerName: 'JUROS', valueGetter: (value: number) => convertMoney(value), width: 120 },
+    { field: 'cpf', headerName: 'CPF', valueGetter: (value: string) => CPFFormat(value), width: 150 },
+    { field: 'balance', headerName: 'SALDO DEVEDOR', valueGetter: (value: number) => convertMoney(value), width: 150 },
+    { field: 'interest_value', headerName: 'JUROS', valueGetter: (value: number) => convertMoney(value), width: 120 },
     { field: 'balance_with_interest', headerName: 'SALDO DEVEDOR AJUSTADO', valueGetter: (value: number) => convertMoney(value), width: 220 },
     {
       field: 'installments_value',
@@ -28,15 +38,24 @@ export default async function Loans() {
     },
   ];
 
-  const loans: any = [];
+  useEffect(() => {
+    setIsLoading(true)
+    ListLoansService().then((res) => {
+      const { data } = res
+      setLoans(data.data)
+    })
+    setIsLoading(false)
+  }, [])
 
+  const handleBackPage = () => {
+    router.push("/")
+  }
 
   return (
     <Box
       display="flex"
       minHeight="100vh"
       flexDirection="column"
-      justifyContent="space-around"
       alignItems="center"
       bgcolor="grey.100"
       px={2}
@@ -44,25 +63,33 @@ export default async function Loans() {
     >
       <Typography variant="h3" component="h3" color="grey.500" fontWeight="100" mb={8}>Empréstimos efetivados.</Typography>
 
-      <Box>
-        <Typography variant="subtitle1" component="p" fontWeight="700" color="grey.600" fontSize="12px" textAlign="left" mt={8} mb={2}>PROJEÇÃO DAS PARCELAS:</Typography>
+      {
+        isLoading ?
+          (
+            <CircularProgress />
+          ) :
+          (
+            <Box bgcolor="white" px={4} py={2} borderRadius={2}>
+              <Button variant="contained" onClick={handleBackPage} style={{ margin: '1rem 0' }} endIcon={<Add />}>NOVA SIMULAÇÃO</Button>
+              <DataGrid
+                rows={loans}
+                columns={columns}
+                disableRowSelectionOnClick
+                disableColumnFilter
+                disableColumnSorting
+                disableColumnResize
+                hideFooterPagination={true}
+                sx={{ border: 'none' }}
+                initialState={{
+                  pagination: {
+                    paginationModel: { page: 0, pageSize: 5, },
+                  }
+                }}
+              />
+            </Box>
 
-        <DataGrid
-          rows={loans}
-          columns={columns}
-          disableRowSelectionOnClick
-          disableColumnFilter
-          disableColumnSorting
-          disableColumnResize
-          hideFooterPagination={true}
-          sx={{ border: 'none' }}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5, },
-            }
-          }}
-        />
-      </Box>
-    </Box>
+          )
+      }
+    </Box >
   );
 }

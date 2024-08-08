@@ -1,5 +1,6 @@
-import { AutoIncrement, BelongsTo, Column, CreatedAt, ForeignKey, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
+import { AfterFind, AutoIncrement, BelongsTo, Column, CreatedAt, DataType, Default, ForeignKey, Model, PrimaryKey, Table, UpdatedAt } from "sequelize-typescript";
 import { State } from "./State";
+import { calcPercent } from "../../../../../utils/calcPercent";
 
 @Table
 class Loan extends Model {
@@ -44,5 +45,22 @@ class Loan extends Model {
 
   @UpdatedAt
   updated_at: Date;
+
+  @Default(0)
+  @Column(DataType.VIRTUAL)
+  interest_value: string | boolean | null;
+
+
+  @AfterFind
+  static async updateInterestValue(instances: any): Promise<void | any> {
+    if (!Array.isArray(instances)) return instances;
+    const newInstances = await Promise.all(
+      instances.map(async (instance: any) => {
+        instance.dataValues.interest_value = calcPercent(instance.dataValues.balance, instance.dataValues.current_interest) * instance.dataValues.installments_times;
+        return instance;
+      })
+    );
+    return newInstances;
+  }
 }
 export { Loan }

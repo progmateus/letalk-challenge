@@ -1,6 +1,6 @@
 import { IStateDTO } from "./IStateDTO";
 
-export interface ILOanDTO {
+export interface ILoanDTO {
   id: number;
   cpf: string;
   state_id: number;

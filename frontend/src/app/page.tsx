@@ -18,6 +18,9 @@ import { ISimulateLoanDTO } from "@/dtos/ISimulateLoanDTO";
 import { fireSuccessNotification } from "@/utils/helperNotifications";
 import { ListStatesService } from "@/services/StatesService";
 import { IStateDTO } from "@/dtos/IStateDTO";
+import { useRouter } from "next/navigation";
+import { Visibility } from "@mui/icons-material";
+import InputMask from 'react-input-mask';
 
 
 dayjs.extend(customParseFormat)
@@ -49,6 +52,7 @@ export default function Home() {
   const [states, setStates] = useState<IStateDTO[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [currentParams, setCurrentParams] = useState<ISimulateLoanDTO | null>(null)
+  const router = useRouter()
 
   useEffect(() => {
     ListStatesService().then((res) => {
@@ -145,6 +149,7 @@ export default function Home() {
       setIsLoading(false)
     })
   }
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -160,9 +165,11 @@ export default function Home() {
         <Typography variant="h3" component="h3" color="grey.500" fontWeight="100" mb={8}>Simule e solicite o seu orçamento.</Typography>
 
         <Stack component="form" onSubmit={handleSubmit(handleSimulate)} spacing={2} direction="column" justifyContent="center" textAlign="center">
-          <Typography variant="subtitle1" component="p" mb={2} fontWeight="700"> Preencha o formulário abaixo para simular </Typography>
-          <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
+          <Typography variant="subtitle1" component="p" mb={4} fontWeight="700"> Preencha o formulário abaixo para simular </Typography>
 
+          <Button variant="contained" onClick={() => router.push('/loans')} style={{ margin: '1rem 0', width: '18rem', marginBottom: '-0.2rem', alignSelf: 'end' }} endIcon={<Visibility />}>VISUALIZAR EMPRÉSTIMOS</Button>
+
+          <Stack spacing={2} direction="column" width="55rem" bgcolor="white" px={4} py={8} borderRadius={2}>
             <Controller
               name="cpf"
               control={control}
