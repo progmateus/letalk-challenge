@@ -67,7 +67,7 @@ class SimulateLoanUseCase {
         balance: balance,
         balance_with_interest: balance + (calcPercent(balance, state.interest) * i),
         interest: calcPercent(balance, state.interest) * i,
-        installments_value: Math.floor((balance + (calcPercent(balance, state.interest)) * i) / i),
+        installments_value: Math.floor((balance + (calcPercent(balance, state.interest))) / i),
         installments_times: i,
         maturity_date: dayjs().add(i, "month")
       })
