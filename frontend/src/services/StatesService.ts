@@ -1,4 +1,4 @@
-import { ISimulateLoanDTO } from "@/dtos/ILoanDTO"
+import { ISimulateLoanDTO } from "@/dtos/ISimulateLoanDTO"
 import { api } from "./api"
 
 export function ListStatesService() {

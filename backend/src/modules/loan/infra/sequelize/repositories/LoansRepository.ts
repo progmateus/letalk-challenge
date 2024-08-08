@@ -11,6 +11,9 @@ class LoansRepository implements ILoansRepository {
   constructor() {
     this.repository = sequelize.getRepository(Loan)
   }
+  async list(): Promise<Loan[]> {
+    return await this.repository.findAll();
+  }
   async create({ balance, birth_date, cpf, installments_times, installments_value, balance_with_interest, current_interest, maturity_date, state_id }: ICreateLoanDTO): Promise<Loan> {
     return await this.repository.create({
       balance, birth_date, cpf, installments_times, installments_value, balance_with_interest, current_interest, maturity_date, state_id

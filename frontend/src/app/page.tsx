@@ -14,7 +14,7 @@ import { LoadingButton } from '@mui/lab';
 import { DataGrid } from "@mui/x-data-grid";
 import { theme } from "@/theme";
 import EastIcon from '@mui/icons-material/East';
-import { ISimulateLoanDTO } from "@/dtos/ILoanDTO";
+import { ISimulateLoanDTO } from "@/dtos/ISimulateLoanDTO";
 import { fireSuccessNotification } from "@/utils/helperNotifications";
 import { ListStatesService } from "@/services/StatesService";
 import { IStateDTO } from "@/dtos/IStateDTO";
