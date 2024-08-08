@@ -9,6 +9,11 @@ class Statesrepository implements IStatesRepository {
   constructor() {
     this.repository = sequelize.getRepository(State)
   }
+  async create(uf: string, interest: number): Promise<State> {
+    return await this.repository.create({
+      uf, interest
+    })
+  }
   list(): Promise<State[]> {
     return this.repository.findAll();
   }
