@@ -5,7 +5,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules --respawn src/shared/infra/http/server.ts",
-    "vercel-build": "npx sequelize db:migrate & npx sequelize db:seed:all "
+    "vercel-build": "npx sequelize db:migrate"
   },
   "author": "",
   "license": "ISC",
