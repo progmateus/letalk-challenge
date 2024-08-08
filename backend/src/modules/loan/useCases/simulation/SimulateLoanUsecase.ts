@@ -44,9 +44,6 @@ class SimulateLoanUseCase {
     if (!isValidCPF(cpf)) {
       throw new AppError("ERR_INVALID_CPF", 400);
     }
-    if (dayjs(dayjs()).diff(birth_date, 'year') < 18) {
-      throw new AppError("ERR_MIN_AGE_IS_18", 400);
-    }
 
     const state = await this.statesRepository.findById(state_id);
 
