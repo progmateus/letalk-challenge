@@ -177,7 +177,8 @@
             "type": "string"
           },
           "birth_date": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           },
           "balance": {
             "type": "number"
@@ -186,10 +187,12 @@
             "type": "number"
           },
           "created_at": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           },
           "updated_at": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -206,7 +209,8 @@
             "type": "string"
           },
           "birth_date": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           },
           "balance": {
             "type": "number"
@@ -221,16 +225,19 @@
             "type": "number"
           },
           "maturity_date": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           },
           "interest_value": {
             "type": "number"
           },
           "created_at": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           },
           "updated_at": {
-            "type": "Date"
+            "type": "string",
+            "format": "date-time"
           }
         }
       },
@@ -247,10 +254,10 @@
             "type": "number"
           },
           "created_at": {
-            "type": "Date"
+            "type": "date"
           },
           "updated_at": {
-            "type": "Date"
+            "type": "date"
           }
         }
       },
@@ -273,7 +280,7 @@
             "type": "number"
           },
           "maturity_date": {
-            "type": "Date"
+            "type": "date"
           }
         }
       }
