@@ -62,12 +62,13 @@ class SimulateLoanUseCase {
     const moreSimulations = [];
 
     for (let i = installments_times; i > 0; i--) {
+      const balance_with_interest = balance + (calcPercent(balance, state.interest) * i)
       moreSimulations.push({
         id: i,
         balance: balance,
-        balance_with_interest: balance + (calcPercent(balance, state.interest) * i),
+        balance_with_interest,
         interest: calcPercent(balance, state.interest) * i,
-        installments_value: Math.floor((balance + (calcPercent(balance, state.interest))) / i),
+        installments_value: Math.floor(balance_with_interest / i),
         installments_times: i,
         maturity_date: dayjs().add(i, "month")
       })

@@ -49,7 +49,7 @@ class CreateLoanUseCase {
       throw new AppError("ERR_INSTALLMENTS_MIN_VALUE", 400);
     }
 
-    const installments_times = Math.floor(balance / installments_value);
+    const installments_times = Math.floor((balance + (calcPercent(balance, state.interest))) / installments_value);
 
     const balance_with_interest = balance + (calcPercent(balance, state.interest) * installments_times);
 
