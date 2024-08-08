@@ -55,7 +55,7 @@ class SimulateLoanUseCase {
       throw new AppError("ERR_INSTALLMENTS_MIN_VALUE", 400);
     }
 
-    const installments_times = Math.floor((balance + (calcPercent(balance, state.interest))) / installments_value);
+    const installments_times = Number(Number((balance + (calcPercent(balance, state.interest))) / installments_value).toFixed(2));
 
     const balance_with_interest = balance + (calcPercent(balance, state.interest) * installments_times);
 
@@ -68,7 +68,7 @@ class SimulateLoanUseCase {
         balance: balance,
         balance_with_interest,
         interest: calcPercent(balance, state.interest) * i,
-        installments_value: Math.floor(balance_with_interest / i),
+        installments_value: Number(Number(balance_with_interest / i)).toFixed(2),
         installments_times: i,
         maturity_date: dayjs().add(i, "month")
       })

@@ -1,5 +1,5 @@
 function calcPercent(balance: number, percent: number) {
-  return balance * percent / 100;
+  return Number(balance.toFixed(2)) * Number(percent.toFixed(2)) / 100;
 }
 
 export { calcPercent }
